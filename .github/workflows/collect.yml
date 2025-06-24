@@ -6,10 +6,10 @@ name: Collect conanfile deps
 on:
   workflow_dispatch:
     inputs:
-      conanfiletxt:
-        description: 'conanfile.txt content'
+      tag:
+        description: 'tag to create'
         required: true
-        default: '[requires]\nzlib/1.3.1'
+        default: '1.0.0'
 
 jobs:
 
@@ -31,19 +31,18 @@ jobs:
     - name: Check conanfile.txt
       id: mipsdk_version_id
       run: |
-        echo "${{ github.event.inputs.conanfiletxt }}" >> conanfile.txt
         cat conanfile.txt
 
     - name: Create release without assets
       run: gh release create $REPO_TAG --notes "$RELEASE_NOTES" --title "$RELEASE_TITLE"
       env:
-          REPO_TAG: conan1.0
-          RELEASE_NOTES: "Complete dependencies list from conanfile.txt: ${{ github.event.inputs.conanfiletxt }}"
-          RELEASE_TITLE: "conandeps 1.0"
+          REPO_TAG: ${{ github.event.inputs.tag }}
+          RELEASE_NOTES: "Complete dependencies list from conanfile.txt: ${{ github.event.inputs.tag }}"
+          RELEASE_TITLE: "Conanfile deps ${{ github.event.inputs.tag }}"
           GH_TOKEN: ${{ github.token }}
 
     - name: Upload assets to release
       run: gh release upload $REPO_TAG $build_dir/conanfile.txt --clobber
       env:
-          REPO_TAG: conan1.0
+          REPO_TAG: ${{ github.event.inputs.tag }}
           GH_TOKEN: ${{ github.token }}
