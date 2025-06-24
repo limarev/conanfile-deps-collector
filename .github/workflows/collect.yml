@@ -31,7 +31,11 @@ jobs:
     - name: Check conanfile.txt
       id: mipsdk_version_id
       run: |
+        wget -O - https://github.com/conan-io/conan/releases/download/$CONAN_VERSION/conan-$CONAN_VERSION-linux-x86_64.tgz | tar xz -C $CONAN_INSTALL_DIR --strip-components 1
         cat conanfile.txt
+      env:
+        CONAN_INSTALL_DIR: /conan2
+        CONAN_VERSION: 2.17.1
 
     - name: Create release without assets
       run: gh release create $REPO_TAG --notes "$RELEASE_NOTES" --title "$RELEASE_TITLE"
